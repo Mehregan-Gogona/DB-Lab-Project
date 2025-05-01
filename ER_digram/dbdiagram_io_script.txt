@@ -1,0 +1,89 @@
+Table Buildings {
+  building_id   int      [pk, increment]
+  building_name varchar  [not null]
+  location      varchar  [not null]
+  total_rooms   int      [not null]
+}
+
+Table Users {
+  user_id         int       [pk, increment]
+  name            varchar   [not null]
+  email           varchar   [not null, unique]
+  password        varchar   [not null]
+  room_number     varchar
+  building_id     int
+  phone_number    varchar
+  profile_picture varchar
+  created_at      datetime  [default: `GETDATE()`]
+}
+
+Table Categories {
+  category_id   int      [pk, increment]
+  user_id       int      [not null]
+  category_name varchar  [not null]
+}
+
+Table Tasks {
+  task_id        int       [pk, increment]
+  user_id        int       [not null]
+  title          varchar   [not null]
+  description    text
+  due_date       datetime
+  priority       varchar   [not null, note: "Low,Medium,High"]
+  status         varchar   [not null, default: 'Pending', note: "Pending,In Progress,Completed"]
+  category_id    int
+  created_at     datetime  [default: `GETDATE()`]
+}
+
+Table Shared_Tasks {
+  shared_id            int      [pk, increment]
+  task_id              int      [not null]
+  shared_with_user_id  int      [not null]
+  status               varchar  [default: 'Pending', note: "Accepted,Declined,Pending"]
+}
+
+Table Notifications {
+  notification_id int       [pk, increment]
+  user_id         int       [not null]
+  message         text      [not null]
+  type            varchar   [not null, note: "Task Reminder,Shared Task Request"]
+  read_status     boolean   [default: false]
+  created_at      datetime  [default: `GETDATE()`]
+}
+
+Table Sessions {
+  session_id  int       [pk, increment]
+  user_id     int       [not null]
+  token       varchar   [not null]
+  ip_address  varchar
+  user_agent  text
+  expires_at  datetime  [not null]
+}
+
+Table Task_Logs {
+  log_id            int      [pk, increment]
+  task_id           int      [not null]
+  changed_by        int      [not null]
+  change_description text     [not null]
+  changed_at        datetime [default: `GETDATE()`]
+}
+
+Table Attachments {
+  attachment_id int      [pk, increment]
+  task_id       int      [not null]
+  file_name     varchar  [not null]
+  file_path     varchar  [not null]
+  uploaded_at   datetime [default: `GETDATE()`]
+}
+
+// relationships
+Ref Tasks_Users:              Tasks.user_id > Users.user_id
+Ref Tasks_Categories:         Tasks.category_id > Categories.category_id
+Ref Shared_Tasks_Tasks:       Shared_Tasks.task_id > Tasks.task_id
+Ref Shared_Tasks_Users:       Shared_Tasks.shared_with_user_id > Users.user_id
+Ref Notifications_Users:      Notifications.user_id > Users.user_id
+Ref Sessions_Users:           Sessions.user_id > Users.user_id
+Ref Task_Logs_Tasks:          Task_Logs.task_id > Tasks.task_id
+Ref Task_Logs_Users:          Task_Logs.changed_by > Users.user_id
+Ref Attachments_Tasks:        Attachments.task_id > Tasks.task_id
+
