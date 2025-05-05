@@ -1,4 +1,3 @@
--- 1. VIEW: User task summary with counts by status
 CREATE VIEW v_UserTaskSummary
 AS
     SELECT
@@ -19,7 +18,7 @@ AS
     GROUP BY u.user_id, u.name, u.email, u.room_number, b.building_name;
 GO
 
--- 2. VIEW: Detailed pending tasks with user and category info
+
 CREATE VIEW v_PendingTasksWithDetails
 AS
     SELECT
@@ -40,7 +39,7 @@ AS
         AND t.due_date > GETDATE();
 GO
 
--- 3. VIEW: Building occupancy statistics
+
 CREATE VIEW v_BuildingOccupancy
 AS
     SELECT
@@ -56,7 +55,7 @@ AS
     GROUP BY b.building_id, b.building_name, b.location, b.total_rooms;
 GO
 
--- 4. VIEW: Shared tasks with user information for both parties
+
 CREATE VIEW v_SharedTasksWithUserInfo
 AS
     SELECT
@@ -78,3 +77,4 @@ AS
         JOIN Users owner ON t.user_id = owner.user_id
         JOIN Users shared ON st.shared_with_user_id = shared.user_id;
 GO
+

@@ -1,4 +1,3 @@
--- 1. TRIGGER: Log task changes automatically to Task_Logs table
 CREATE TRIGGER trg_TaskChanges
 ON Tasks
 AFTER UPDATE
@@ -26,7 +25,7 @@ BEGIN
 END;
 GO
 
--- 2. TRIGGER: Create notification when task is shared with a user
+
 CREATE TRIGGER trg_TaskSharedNotification
 ON Shared_Tasks
 AFTER INSERT
@@ -54,7 +53,7 @@ BEGIN
 END;
 GO
 
--- 3. TRIGGER: Create notification when task due date is approaching (within 24 hours)
+
 CREATE TRIGGER trg_TaskDueSoonReminder
 ON Tasks
 AFTER INSERT, UPDATE
@@ -76,13 +75,13 @@ BEGIN
 END;
 GO
 
--- 4. TRIGGER: Update task status counts for user when task status changes
+
 CREATE TRIGGER trg_UpdateSessionExpiry
 ON Sessions
 AFTER INSERT, UPDATE
 AS
 BEGIN
-    -- Automatically expire sessions that are older than 30 days
+
     UPDATE Sessions
     SET expires_at = CASE 
                         WHEN DATEDIFF(DAY, GETDATE(), expires_at) > 30 
@@ -93,3 +92,4 @@ BEGIN
     FROM inserted);
 END;
 GO
+

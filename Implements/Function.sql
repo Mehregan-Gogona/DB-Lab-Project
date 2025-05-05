@@ -1,4 +1,3 @@
--- 1. FUNCTION: Get task count for a user with optional status filter
 CREATE FUNCTION fn_GetUserTaskCount (
     @user_id INT,
     @status VARCHAR(20) = NULL
@@ -17,7 +16,7 @@ BEGIN
 END;
 GO
 
--- 2. FUNCTION: Calculate building occupancy percentage
+
 CREATE FUNCTION fn_GetBuildingOccupancyRate (
     @building_id INT
 )
@@ -45,7 +44,7 @@ BEGIN
 END;
 GO
 
--- 3. FUNCTION: Check if user has upcoming tasks in the specified time period
+
 CREATE FUNCTION fn_HasUserUpcomingTasks (
     @user_id INT,
     @days_ahead INT = 7
@@ -68,7 +67,7 @@ BEGIN
 END;
 GO
 
--- 4. FUNCTION: Calculate user productivity score based on completed tasks
+
 CREATE FUNCTION fn_CalculateUserProductivity (
     @user_id INT,
     @days_back INT = 30
@@ -115,3 +114,4 @@ BEGIN
     RETURN @productivity_score;
 END;
 GO
+

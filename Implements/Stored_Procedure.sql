@@ -1,4 +1,3 @@
--- 1. PROCEDURE: Register a new user
 CREATE PROCEDURE sp_CreateNewUser
     @name VARCHAR(255),
     @email VARCHAR(255),
@@ -18,7 +17,7 @@ BEGIN
         RETURN -1
     END
 
-    -- Insert new user
+
     INSERT INTO Users
         (name, email, password, room_number, building_id, phone_number, profile_picture, created_at)
     VALUES
@@ -29,7 +28,7 @@ BEGIN
 END;
 GO
 
--- 2. PROCEDURE: Create and assign a new task
+
 CREATE PROCEDURE sp_CreateTask
     @user_id INT,
     @title VARCHAR(255),
@@ -39,7 +38,7 @@ CREATE PROCEDURE sp_CreateTask
     @category_id INT = NULL
 AS
 BEGIN
-    -- Validate parameters
+	-- Check if user exists
     IF NOT EXISTS (SELECT 1
     FROM Users
     WHERE user_id = @user_id)
@@ -56,7 +55,7 @@ BEGIN
         RETURN -2
     END
 
-    -- Insert new task
+
     INSERT INTO Tasks
         (user_id, title, description, due_date, priority, status, category_id, created_at)
     VALUES
@@ -67,7 +66,7 @@ BEGIN
 END;
 GO
 
--- 3. PROCEDURE: Share a task with another user
+
 CREATE PROCEDURE sp_ShareTaskWithUser
     @task_id INT,
     @shared_with_user_id INT,
@@ -101,7 +100,7 @@ BEGIN
         RETURN -3
     END
 
-    -- Share the task
+
     INSERT INTO Shared_Tasks
         (task_id, shared_with_user_id, status)
     VALUES
@@ -112,7 +111,7 @@ BEGIN
 END;
 GO
 
--- 4. PROCEDURE: Update task status and log the change
+
 CREATE PROCEDURE sp_UpdateTaskStatus
     @task_id INT,
     @status VARCHAR(20),
@@ -158,7 +157,7 @@ BEGIN
 END;
 GO
 
--- 5. PROCEDURE: Get user's tasks with filtering options
+
 CREATE PROCEDURE sp_GetUserTasks
     @user_id INT,
     @status VARCHAR(20) = NULL,
@@ -195,3 +194,4 @@ BEGIN
         t.due_date
 END;
 GO
+

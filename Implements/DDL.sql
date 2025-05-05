@@ -1,4 +1,3 @@
--- Create the Buildings table
 CREATE TABLE Buildings
 (
     building_id INT PRIMARY KEY IDENTITY(1,1),
@@ -7,7 +6,7 @@ CREATE TABLE Buildings
     total_rooms INT NOT NULL
 );
 
--- Create the Users table
+
 CREATE TABLE Users
 (
     user_id INT PRIMARY KEY IDENTITY(1,1),
@@ -22,7 +21,7 @@ CREATE TABLE Users
     FOREIGN KEY (building_id) REFERENCES Buildings(building_id)
 );
 
--- Create the Categories table
+
 CREATE TABLE Categories
 (
     category_id INT PRIMARY KEY IDENTITY(1,1),
@@ -31,7 +30,7 @@ CREATE TABLE Categories
     FOREIGN KEY (user_id) REFERENCES Users(user_id)
 );
 
--- Create the Tasks table
+
 CREATE TABLE Tasks
 (
     task_id INT PRIMARY KEY IDENTITY(1,1),
@@ -47,7 +46,7 @@ CREATE TABLE Tasks
     FOREIGN KEY (category_id) REFERENCES Categories(category_id)
 );
 
--- Create the Shared Tasks table
+
 CREATE TABLE Shared_Tasks
 (
     shared_id INT PRIMARY KEY IDENTITY(1,1),
@@ -58,7 +57,7 @@ CREATE TABLE Shared_Tasks
     FOREIGN KEY (shared_with_user_id) REFERENCES Users(user_id)
 );
 
--- Create the Notifications table
+
 CREATE TABLE Notifications
 (
     notification_id INT PRIMARY KEY IDENTITY(1,1),
@@ -70,7 +69,7 @@ CREATE TABLE Notifications
     FOREIGN KEY (user_id) REFERENCES Users(user_id)
 );
 
--- Create the Sessions table for login sessions / auth tokens
+
 CREATE TABLE Sessions
 (
     session_id INT PRIMARY KEY IDENTITY(1,1),
@@ -82,7 +81,7 @@ CREATE TABLE Sessions
     FOREIGN KEY (user_id) REFERENCES Users(user_id)
 );
 
--- Create the Task Logs table for task history / audit logs
+
 CREATE TABLE Task_Logs
 (
     log_id INT PRIMARY KEY IDENTITY(1,1),
@@ -94,7 +93,7 @@ CREATE TABLE Task_Logs
     FOREIGN KEY (changed_by) REFERENCES Users(user_id)
 );
 
--- Create the Attachments table for task attachments
+
 CREATE TABLE Attachments
 (
     attachment_id INT PRIMARY KEY IDENTITY(1,1),
@@ -104,3 +103,4 @@ CREATE TABLE Attachments
     uploaded_at DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (task_id) REFERENCES Tasks(task_id)
 );
+
