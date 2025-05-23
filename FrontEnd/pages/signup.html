@@ -3,22 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DormDuty</title>
+    <title>Sign Up - DormDuty</title>
     <link rel="stylesheet" href="../styles/login.css">
 </head>
 <body>
     <div class="container">
         <div class="login-section">
-            <h2>Login</h2>
+            <h2>Sign Up</h2>
             <form>
                 <label for="username">Username</label>
                 <input type="text" id="username" name="username" required>
                 
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+                
                 <label for="password">Password</label>
                 <input type="password" id="password" name="password" required>
                 
-                <button type="submit">Login in</button>
-                <button type="button" class="signup-btn" onclick="window.location.href='signup.html'">Sign Up</button>
+                <button type="submit">Sign Up</button>
+                <button type="button" class="signup-btn" onclick="window.location.href='index.html'">Back to Login</button>
             </form>
         </div>
         <div class="logo-section">
