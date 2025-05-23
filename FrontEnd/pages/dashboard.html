@@ -61,6 +61,7 @@
                 </div>
             </section>
             <section id="profile" class="dashboard-section">
+                
                 <h2>Profile</h2>
                 <div class="profile-info">
                     <img id="profile-picture" src="../logs_backgrounds/DormDuty_logo1.png" alt="Profile Picture">
@@ -72,8 +73,91 @@
                         <p><strong>Building:</strong> <span id="profile-building"></span></p>
                     </div>
                 </div>
+
+                <!-- Add inside <section id="profile" ...> -->
+                <button id="edit-profile-btn" class="add-task-btn" style="margin-bottom:16px;">Edit Profile</button>
+                <form id="profile-edit-form" style="display:none; flex-direction:column; gap:12px; margin-top:16px;">
+                    <label>Name: <input type="text" id="edit-profile-name"></label>
+                    <label>Email: <input type="email" id="edit-profile-email"></label>
+                    <label>Phone: <input type="text" id="edit-profile-phone"></label>
+                    <label>Room: <input type="text" id="edit-profile-room"></label>
+                    <button type="submit" class="add-task-btn">Save</button>
+                    <button type="button" id="cancel-edit-profile" class="add-task-btn" style="background:#fff;color:#5f6fff;border:2px solid #5f6fff;">Cancel</button>
+                </form>
             </section>
         </main>
     </div>
+
+
+<script>
+
+ window.addEventListener('DOMContentLoaded', async () => {
+    const user_id = localStorage.getItem('user_id');
+    if (!user_id) return;
+
+    const res = await fetch(`http://localhost:8000/accounts/get_profile/?user_id=${user_id}`);
+    const data = await res.json();
+    if (data.success) {
+        document.getElementById('profile-name').textContent = data.user.name || '';
+        document.getElementById('profile-email').textContent = data.user.email || '';
+        document.getElementById('profile-phone').textContent = data.user.phone_number || '';
+        document.getElementById('profile-room').textContent = data.user.room_number || '';
+        document.getElementById('profile-building').textContent = data.user.building_id || '';
+        if (data.user.profile_picture) {
+            document.getElementById('profile-picture').src = data.user.profile_picture;
+        }
+    }
+});
+
+
+const editBtn = document.getElementById('edit-profile-btn');
+const form = document.getElementById('profile-edit-form');
+const cancelBtn = document.getElementById('cancel-edit-profile');
+
+// Show form with current info
+editBtn.onclick = function() {
+    form.style.display = 'flex';
+    document.getElementById('edit-profile-name').value = document.getElementById('profile-name').textContent;
+    document.getElementById('edit-profile-email').value = document.getElementById('profile-email').textContent;
+    document.getElementById('edit-profile-phone').value = document.getElementById('profile-phone').textContent;
+    document.getElementById('edit-profile-room').value = document.getElementById('profile-room').textContent;
+};
+
+// Hide form
+cancelBtn.onclick = function() {
+    form.style.display = 'none';
+};
+
+// Handle form submit
+form.onsubmit = async function(e) {
+    e.preventDefault();
+    
+    const user_id = localStorage.getItem('user_id');
+
+    const res = await fetch('http://localhost:8000/accounts/update_profile/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            user_id,
+            name: document.getElementById('edit-profile-name').value,
+            email: document.getElementById('edit-profile-email').value,
+            phone_number: document.getElementById('edit-profile-phone').value,
+            room_number: document.getElementById('edit-profile-room').value
+        })
+    });
+    const data = await res.json();
+    if (data.success) {
+        // Update profile display
+        document.getElementById('profile-name').textContent = data.user.name;
+        document.getElementById('profile-email').textContent = data.user.email;
+        document.getElementById('profile-phone').textContent = data.user.phone_number;
+        document.getElementById('profile-room').textContent = data.user.room_number;
+        form.style.display = 'none';
+        alert('Profile updated!');
+    } else {
+        alert('Update failed: ' + (data.error || 'Unknown error'));
+    }
+};
+</script>
 </body>
 </html>

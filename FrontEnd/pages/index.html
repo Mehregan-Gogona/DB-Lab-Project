@@ -39,6 +39,7 @@ document.querySelector('form').addEventListener('submit', async function(e) {
     const data = await res.json();
     if (data.success) {
         alert('Login successful!');
+        localStorage.setItem('user_id', data.user_id); // Store user_id
         window.location.href = 'dashboard.html';
     } else {
         alert('Login failed: ' + (data.error || 'Unknown error'));

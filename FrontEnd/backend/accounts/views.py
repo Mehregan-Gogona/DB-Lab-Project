@@ -49,12 +49,35 @@ def login_view(request):
         try:
             user = Users.objects.get(name=username, password=password)
             print("Login successful for user_id:", user.user_id)
-            return JsonResponse({'success': True})
+            request.session['user_id'] = user.user_id
+            return JsonResponse({'success': True, 'user_id': user.user_id})  # <-- FIXED HERE
         except Users.DoesNotExist:
             print("Login failed for username:", username)
             return JsonResponse({'success': False, 'error': 'Invalid credentials'})
 
     return JsonResponse({'success': False, 'error': 'Invalid request method'})
+
+
+@csrf_exempt
+def get_profile(request):
+    if request.method == 'GET':
+        user_id = request.GET.get('user_id')
+        try:
+            user = Users.objects.get(user_id=user_id)
+            return JsonResponse({
+                'success': True,
+                'user': {
+                    'name': user.name,
+                    'email': user.email,
+                    'phone_number': user.phone_number,
+                    'room_number': user.room_number,
+                    'building_id': user.building_id,
+                    'profile_picture': user.profile_picture,
+                }
+            })
+        except Users.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'User not found'})
+    return JsonResponse({'success': False, 'error': 'Invalid request'})
 
 
 @csrf_exempt
@@ -64,6 +87,31 @@ def get_tasks(request):
         tasks = list(Tasks.objects.filter(user_id=user_id).values())
         return JsonResponse({'tasks': tasks})
     
-
-
-
+@csrf_exempt
+def update_profile(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        user_id = data.get('user_id')
+        print("user_id is ", user_id)  
+        print("data is ", data)
+        try:
+            user = Users.objects.get(user_id=user_id)
+            # Only update fields if they are provided and not empty
+            if data.get('name'):
+                user.name = data.get('name')
+            if data.get('email'):
+                user.email = data.get('email')
+            if data.get('phone_number'):
+                user.phone_number = data.get('phone_number')
+            if data.get('room_number'):
+                user.room_number = data.get('room_number')
+            user.save()
+            return JsonResponse({'success': True, 'user': {
+                'name': user.name,
+                'email': user.email,
+                'phone_number': user.phone_number,
+                'room_number': user.room_number
+            }})
+        except Users.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'User not found'})
+    return JsonResponse({'success': False, 'error': 'Invalid request'})
