@@ -26,4 +26,24 @@
         </div>
     </div>
 </body> 
+<script>
+document.querySelector('form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    const res = await fetch('http://localhost:8000/accounts/login/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+    });
+    const data = await res.json();
+    if (data.success) {
+        alert('Login successful!');
+        // Redirect or update UI as needed
+    } else {
+        alert('Login failed: ' + (data.error || 'Unknown error'));
+    }
+});
+</script>
+</body>
 </html>

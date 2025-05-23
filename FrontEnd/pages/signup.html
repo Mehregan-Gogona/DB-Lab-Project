@@ -17,10 +17,16 @@
                 <label for="email">Email</label>
                 <input type="email" id="email" name="email" required>
                 
+                <label for="PhoneNumber">PhoneNumber</label>
+                <input type="PhoneNumber" id="PhoneNumber" name="PhoneNumber" required>
+                
+
                 <label for="password">Password</label>
                 <input type="password" id="password" name="password" required>
                 
                 <button type="submit">Sign Up</button>
+
+
                 <button type="button" class="signup-btn" onclick="window.location.href='index.html'">Back to Login</button>
             </form>
         </div>
@@ -28,5 +34,26 @@
             <img src="../logs_backgrounds/DormDuty_logo1.png" alt="Project Logo" class="logo">
         </div>
     </div>
+</body>
+<script>
+document.querySelector('form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const username = document.getElementById('username').value;
+    const email    = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const res = await fetch('http://localhost:8000/accounts/signup/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, email, password })
+    });
+    const data = await res.json();
+    if (data.success) {
+        alert('Signup successful! You can now log in.');
+        window.location.href = 'index.html';
+    } else {
+        alert('Signup failed: ' + (data.error || 'Unknown error'));
+    }
+});
+</script>
 </body> 
 </html>
