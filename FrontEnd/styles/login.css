@@ -1,0 +1,137 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f6f8fa;
+    min-height: 100vh;
+}
+
+.container {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    align-items: stretch;
+}
+
+.login-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 60px 80px;
+    background: #fff;
+    box-shadow: 2px 0 20px rgba(0,0,0,0.04);
+    animation: slideInLeft 1s cubic-bezier(.77,0,.18,1) both;
+}
+
+.login-section h2 {
+    margin-bottom: 32px;
+    font-size: 2.2rem;
+    color: #22223b;
+    letter-spacing: 1px;
+}
+
+.login-section form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.login-section label {
+    font-size: 1rem;
+    color: #4a4e69;
+    margin-bottom: 6px;
+}
+
+.login-section input {
+    padding: 12px 14px;
+    border: 1px solid #c9c9c9;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+    outline: none;
+}
+
+.login-section input:focus {
+    border-color: #5f6fff;
+}
+
+.login-section button {
+    margin-top: 18px;
+    padding: 12px 0;
+    background: linear-gradient(90deg, #5f6fff 0%, #48b1f3 100%);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(72,177,243,0.08);
+    transition: background 0.3s, transform 0.2s;
+}
+
+.login-section button:hover {
+    background: linear-gradient(90deg, #48b1f3 0%, #5f6fff 100%);
+    transform: translateY(-2px) scale(1.03);
+}
+
+.logo-section {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #5f6fff 0%, #48b1f3 100%);
+    animation: slideInRight 1s cubic-bezier(.77,0,.18,1) both;
+}
+
+.signup-btn {
+    background: #fff;
+    color: #5f6fff;
+    border: 2px solid #5f6fff;
+    margin-top: 10px;
+    transition: background 0.3s, color 0.3s;
+}
+
+.signup-btn:hover {
+    background: #5f6fff;
+    color: #fff;
+}
+.logo {
+    width: 220px;
+    max-width: 60%;
+    filter: drop-shadow(0 8px 24px rgba(0,0,0,0.10));
+    animation: logoPop 1.2s cubic-bezier(.77,0,.18,1) both;
+}
+
+/* Animations */
+@keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-60px);}
+    to { opacity: 1; transform: translateX(0);}
+}
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(60px);}
+    to { opacity: 1; transform: translateX(0);}
+}
+@keyframes logoPop {
+    0% { opacity: 0; transform: scale(0.7);}
+    80% { opacity: 1; transform: scale(1.05);}
+    100% { opacity: 1; transform: scale(1);}
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .container {
+        flex-direction: column;
+    }
+    .logo-section {
+        min-height: 200px;
+    }
+    .login-section, .logo-section {
+        flex: unset;
+        width: 100%;
+        padding: 40px 20px;
+    }
+    .logo {
+        width: 120px;
+    }
+}
