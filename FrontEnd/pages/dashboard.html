@@ -3,10 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <title>DormDuty Dashboard</title>
-    <link rel="stylesheet" href="../styles/login.css">
+    <link rel="stylesheet" href="../styles/dashboard.css">
+    <link rel="stylesheet" href="../styles/login.css"> <!-- reuse login styles for buttons etc. -->
 </head>
 <body>
-    <h1>Welcome to the DormDuty Dashboard!</h1>
-    <!-- Add your dashboard content here -->
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <img src="../logs_backgrounds/DormDuty_logo1.png" alt="DormDuty Logo">
+            </div>
+            <nav>
+                <ul>
+                    <li class="active"><a href="#overview">Overview</a></li>
+                    <li><a href="#tasks">My Tasks</a></li>
+                    <li><a href="#shared">Shared Tasks</a></li>
+                    <li><a href="#notifications">Notifications</a></li>
+                    <li><a href="#profile">Profile</a></li>
+                    <li><a href="index.html">Logout</a></li>
+                </ul>
+            </nav>
+        </aside>
+        <main class="dashboard-main">
+            <section id="overview" class="dashboard-section">
+                <h2>Overview</h2>
+                <div class="overview-cards">
+                    <div class="card" id="tasks-count">
+                        <h3>Tasks</h3>
+                        <span>0</span>
+                    </div>
+                    <div class="card" id="shared-count">
+                        <h3>Shared Tasks</h3>
+                        <span>0</span>
+                    </div>
+                    <div class="card" id="notifications-count">
+                        <h3>Notifications</h3>
+                        <span>0</span>
+                    </div>
+                </div>
+            </section>
+            <section id="tasks" class="dashboard-section">
+                <h2>My Tasks</h2>
+                <div id="tasks-list">
+                    <!-- Tasks will be loaded here -->
+                </div>
+                <button class="add-task-btn">+ Add Task</button>
+            </section>
+            <section id="shared" class="dashboard-section">
+                <h2>Shared Tasks</h2>
+                <div id="shared-tasks-list">
+                    <!-- Shared tasks will be loaded here -->
+                </div>
+            </section>
+            <section id="notifications" class="dashboard-section">
+                <h2>Notifications</h2>
+                <div id="notifications-list">
+                    <!-- Notifications will be loaded here -->
+                </div>
+            </section>
+            <section id="profile" class="dashboard-section">
+                <h2>Profile</h2>
+                <div class="profile-info">
+                    <img id="profile-picture" src="../logs_backgrounds/DormDuty_logo1.png" alt="Profile Picture">
+                    <div>
+                        <p><strong>Name:</strong> <span id="profile-name"></span></p>
+                        <p><strong>Email:</strong> <span id="profile-email"></span></p>
+                        <p><strong>Phone:</strong> <span id="profile-phone"></span></p>
+                        <p><strong>Room:</strong> <span id="profile-room"></span></p>
+                        <p><strong>Building:</strong> <span id="profile-building"></span></p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
 </body>
 </html>

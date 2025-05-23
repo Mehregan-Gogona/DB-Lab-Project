@@ -1,0 +1,177 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(120deg, #e0e7ff 0%, #f6f8fa 100%);
+    min-height: 100vh;
+}
+/* ...existing code... */
+
+.dashboard-container {
+    display: flex;
+    min-height: 100vh;
+    padding: 24px; /* Added padding for overall spacing */
+    box-sizing: border-box;
+}
+
+.sidebar {
+    width: 220px;
+    background: #5f6fff;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 24px 32px 24px; /* More padding for classiness */
+    border-radius: 18px;
+    margin-right: 32px; /* Space between sidebar and main */
+    box-shadow: 0 4px 24px rgba(72, 177, 243, 0.10);
+}
+
+.sidebar-logo img {
+    width: 120px;
+    margin-bottom: 40px;
+    padding: 8px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(72, 177, 243, 0.10);
+}
+
+.sidebar nav ul {
+    list-style: none;
+    padding: 0;
+    width: 100%;
+}
+
+.sidebar nav ul li {
+    width: 100%;
+    margin-bottom: 8px; /* Space between nav items */
+}
+
+.sidebar nav ul li a {
+    display: block;
+    color: #fff;
+    text-decoration: none;
+    padding: 16px 32px;
+    border-radius: 8px;
+    transition: background 0.2s, padding 0.2s;
+}
+
+.sidebar nav ul li.active a,
+.sidebar nav ul li a:hover {
+    background: #4856d6;
+    padding-left: 40px;
+}
+
+.dashboard-main {
+    flex: 1;
+    padding: 48px 48px 48px 0; /* More padding, no left padding (sidebar margin) */
+    background: transparent;
+}
+
+.dashboard-section {
+    margin-bottom: 48px;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 4px 24px rgba(72, 177, 243, 0.10);
+    padding: 40px 36px 36px 36px; /* More padding */
+}
+
+.dashboard-section h2 {
+    margin-bottom: 24px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e0e7ff;
+}
+
+.overview-cards {
+    display: flex;
+    gap: 32px;
+    margin-top: 24px;
+}
+
+.card {
+    background: #f6f8fa;
+    border-radius: 16px;
+    padding: 32px 36px;
+    flex: 1;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(72, 177, 243, 0.08);
+    margin-bottom: 8px;
+}
+
+.card h3 {
+    margin: 0 0 16px 0;
+    color: #5f6fff;
+    font-size: 1.2rem;
+}
+
+.card span {
+    font-size: 2.4rem;
+    font-weight: bold;
+    color: #22223b;
+}
+
+.add-task-btn {
+    margin-top: 32px;
+    padding: 14px 40px;
+    background: linear-gradient(90deg, #5f6fff 0%, #48b1f3 100%);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.15rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(72,177,243,0.10);
+    transition: background 0.3s, transform 0.2s;
+}
+
+.add-task-btn:hover {
+    background: linear-gradient(90deg, #48b1f3 0%, #5f6fff 100%);
+    transform: translateY(-2px) scale(1.04);
+}
+
+.profile-info {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    padding: 16px 0;
+}
+
+.profile-info img {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #5f6fff;
+    background: #e0e7ff;
+    padding: 6px;
+    box-shadow: 0 2px 8px rgba(72, 177, 243, 0.10);
+}
+
+.profile-info div {
+    padding: 12px 0;
+}
+
+@media (max-width: 900px) {
+    .dashboard-container {
+        flex-direction: column;
+        padding: 8px;
+    }
+    .sidebar {
+        width: 100%;
+        flex-direction: row;
+        justify-content: space-between;
+        padding: 16px;
+        margin-right: 0;
+        border-radius: 12px;
+    }
+    .dashboard-main {
+        padding: 20px 8px;
+    }
+    .overview-cards {
+        flex-direction: column;
+        gap: 16px;
+    }
+    .dashboard-section {
+        padding: 24px 8px;
+    }
+}

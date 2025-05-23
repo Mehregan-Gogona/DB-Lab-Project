@@ -15,4 +15,26 @@ class Users(models.Model):
         db_table = 'Users'
         managed = False  # Because the table already exists
 
+class Categories(models.Model):
+    category_id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(Users, on_delete=models.CASCADE)
+    category_name = models.CharField(max_length=255)
 
+    class Meta:
+        db_table = 'Categories'
+        managed = False
+
+class Tasks(models.Model):
+    task_id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(Users, on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    description = models.TextField(null=True, blank=True)
+    due_date = models.DateTimeField(null=True, blank=True)
+    priority = models.CharField(max_length=20)
+    status = models.CharField(max_length=20, default='Pending')
+    category = models.ForeignKey(Categories, null=True, blank=True, on_delete=models.SET_NULL)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+
+    class Meta:
+        db_table = 'Tasks'
+        managed = False  # If table already exists

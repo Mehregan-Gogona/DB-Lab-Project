@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 from .models import Users  # Use your custom Users model
+from .models import Tasks  # Use your custom Users model
 
 @csrf_exempt
 def signup(request):
@@ -54,3 +55,15 @@ def login_view(request):
             return JsonResponse({'success': False, 'error': 'Invalid credentials'})
 
     return JsonResponse({'success': False, 'error': 'Invalid request method'})
+
+
+@csrf_exempt
+def get_tasks(request):
+    if request.method == 'GET':
+        user_id = request.GET.get('user_id')
+        tasks = list(Tasks.objects.filter(user_id=user_id).values())
+        return JsonResponse({'tasks': tasks})
+    
+
+
+
