@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DormDuty</title>
+    <title> DormDuty </title>
     <link rel="stylesheet" href="../styles/login.css">
 </head>
 <body>
@@ -39,7 +39,7 @@ document.querySelector('form').addEventListener('submit', async function(e) {
     const data = await res.json();
     if (data.success) {
         alert('Login successful!');
-        // Redirect or update UI as needed
+        window.location.href = 'dashboard.html';
     } else {
         alert('Login failed: ' + (data.error || 'Unknown error'));
     }

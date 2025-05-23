@@ -12,7 +12,7 @@ class Users(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 
     class Meta:
-        db_table = 'dbo.Users'
+        db_table = 'Users'
         managed = False  # Because the table already exists
 
 
