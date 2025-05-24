@@ -2,7 +2,7 @@ from django.db import connection
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
-from .models import Users , Tasks , Categories , Notifications
+from .models import Users , Tasks , Categories , Notifications ,SharedTasks
 import os
 from django.conf import settings
 
@@ -177,7 +177,7 @@ import json
 def get_shared_tasks(request):
     if request.method == 'GET':
         user_id = request.GET.get('user_id')
-        shared = SharedTasks.objects.filter(shared_with_user__user_id=user_id).select_related('task')
+        shared = SharedTasks.objects.filter(shared_with_user_id=user_id).select_related('task')
         shared_list = [
             {
                 'shared_id': s.shared_id,
@@ -186,13 +186,12 @@ def get_shared_tasks(request):
                 'description': s.task.description,
                 'due_date': s.task.due_date,
                 'priority': s.task.priority,
-                'status': s.status
+                'status': s.task.status  # <-- This is from Tasks table
             }
             for s in shared
         ]
         return JsonResponse({'success': True, 'shared_tasks': shared_list})
     return JsonResponse({'success': False, 'error': 'Invalid request'})
-
 
 @csrf_exempt
 def update_task_status(request):
@@ -212,50 +211,35 @@ def update_task_status(request):
     return JsonResponse({'success': False, 'error': 'Invalid request'})
 
 
-from .models import SharedTasks, Tasks, Users
 
 @csrf_exempt
 def share_task(request):
     if request.method == 'POST':
         data = json.loads(request.body)
         task_id = data.get('task_id')
-        shared_with_user_id = data.get('shared_with_user_id')
+        shared_with_username = data.get('shared_with_username')
+        print("Creating notification for shared task:", task_id, "to", shared_with_username)
         try:
             task = Tasks.objects.get(task_id=task_id)
-            user = Users.objects.get(user_id=shared_with_user_id)
-            shared_task = SharedTasks.objects.create(task=task, shared_with_user=user)
-            return JsonResponse({'success': True, 'shared_id': shared_task.shared_id})
-        except Exception as e:
-            return JsonResponse({'success': False, 'error': str(e)})
-    return JsonResponse({'success': False, 'error': 'Invalid request'})
-
-from .models import SharedTasks, Tasks, Users
-
-@csrf_exempt
-def share_task(request):
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        task_id = data.get('task_id')
-        shared_with_user_id = data.get('shared_with_user_id')
-        try:
-            task = Tasks.objects.get(task_id=task_id)
-            user = Users.objects.get(user_id=shared_with_user_id)
-            shared_task = SharedTasks.objects.create(task=task, shared_with_user=user)
-            return JsonResponse({'success': True, 'shared_id': shared_task.shared_id})
-        except Exception as e:
-            return JsonResponse({'success': False, 'error': str(e)})
-    return JsonResponse({'success': False, 'error': 'Invalid request'})
-
-@csrf_exempt
-def share_task(request):
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        task_id = data.get('task_id')
-        shared_with_username = data.get('shared_with_username')  # or shared_with_email
-        try:
-            task = Tasks.objects.get(task_id=task_id)
-            user = Users.objects.get(name=shared_with_username)  # or email=shared_with_email
-            shared_task = SharedTasks.objects.create(task=task, shared_with_user=user)
+            user = Users.objects.get(name=shared_with_username)
+            shared_task, created = SharedTasks.objects.get_or_create(
+                task=task,
+                shared_with_user=user,
+                defaults={'status': 'Pending'}
+            )
+            # Only create notification if it doesn't already exist for this shared_task
+            notif_exists = Notifications.objects.filter(
+                user=user,
+                type='Shared Task Request',
+                shared=shared_task
+            ).exists()
+            if not notif_exists:
+                Notifications.objects.create(
+                    user=user,
+                    message=f"{task.user.name} shared a task with you: {task.title}",
+                    type='Shared Task Request',
+                    shared=shared_task
+                )
             return JsonResponse({'success': True, 'shared_id': shared_task.shared_id})
         except Users.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'User not found'})
@@ -307,18 +291,22 @@ def get_notifications(request):
     if request.method == 'GET':
         user_id = request.GET.get('user_id')
         notifications = Notifications.objects.filter(user_id=user_id).order_by('-created_at')
-        notif_list = [
-            {
+        notif_list = []
+        for n in notifications:
+            notif_dict = {
                 'notification_id': n.notification_id,
                 'message': n.message,
                 'type': n.type,
                 'read_status': n.read_status,
                 'created_at': n.created_at.strftime('%Y-%m-%d %H:%M')
             }
-            for n in notifications
-        ]
+            if n.type == 'Shared Task Request' and n.shared:
+                notif_dict['shared_id'] = n.shared.shared_id
+                notif_dict['shared_status'] = n.shared.status
+            notif_list.append(notif_dict)
         return JsonResponse({'success': True, 'notifications': notif_list})
     return JsonResponse({'success': False, 'error': 'Invalid request'})
+
 
 @csrf_exempt
 def mark_notification_read(request):
@@ -341,10 +329,51 @@ def create_notification(request):
         user_id = data.get('user_id')
         message = data.get('message')
         notif_type = data.get('type')
+        print("Generic notification created:", message)
+        # Prevent duplicate shared task notifications
+        if notif_type == 'Shared Task Request':
+            return JsonResponse({'success': False, 'error': 'Use share_task endpoint for shared task notifications'})
         try:
             user = Users.objects.get(user_id=user_id)
             notif = Notifications.objects.create(user=user, message=message, type=notif_type)
             return JsonResponse({'success': True, 'notification_id': notif.notification_id})
         except Users.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'User not found'})
+    return JsonResponse({'success': False, 'error': 'Invalid request'})
+
+
+@csrf_exempt
+def update_shared_task_status(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        shared_id = data.get('shared_id')
+        status = data.get('status')
+        allowed_statuses = ['Pending', 'In Progress', 'Completed']
+        if status not in allowed_statuses:
+            return JsonResponse({'success': False, 'error': 'Invalid status value'})
+        try:
+            shared_task = SharedTasks.objects.get(shared_id=shared_id)
+            shared_task.status = status
+            shared_task.save()
+            return JsonResponse({'success': True})
+        except SharedTasks.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Shared task not found'})
+    return JsonResponse({'success': False, 'error': 'Invalid request'})
+
+
+@csrf_exempt
+def respond_shared_task(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        shared_id = data.get('shared_id')
+        action = data.get('action')  # 'Accepted' or 'Declined'
+        if action not in ['Accepted', 'Declined']:
+            return JsonResponse({'success': False, 'error': 'Invalid action'})
+        try:
+            shared_task = SharedTasks.objects.get(shared_id=shared_id)
+            shared_task.status = action
+            shared_task.save()
+            return JsonResponse({'success': True})
+        except SharedTasks.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Shared task not found'})
     return JsonResponse({'success': False, 'error': 'Invalid request'})

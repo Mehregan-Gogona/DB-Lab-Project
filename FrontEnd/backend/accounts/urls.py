@@ -17,4 +17,7 @@ urlpatterns = [
     path('get_notifications/', views.get_notifications, name='get_notifications'),
     path('mark_notification_read/', views.mark_notification_read, name='mark_notification_read'),
     path('create_notification/', views.create_notification, name='create_notification'),
+    path('update_shared_task_status/', views.update_shared_task_status, name='update_shared_task_status'),
+    path('respond_shared_task/', views.respond_shared_task, name='respond_shared_task'),
 ]
+

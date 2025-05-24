@@ -51,11 +51,10 @@ class SharedTasks(models.Model):
 
     class Meta:
         db_table = 'Shared_Tasks'
-        managed = False  # If the table already exists in your DB
+        managed = False  
 
 
 
-# ...existing code...
 
 class Notifications(models.Model):
     notification_id = models.AutoField(primary_key=True)
@@ -64,7 +63,8 @@ class Notifications(models.Model):
     type = models.CharField(max_length=25)
     read_status = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
+    shared = models.ForeignKey('SharedTasks', null=True, blank=True, on_delete=models.CASCADE, db_column='shared_id')  # <-- Add this
 
     class Meta:
         db_table = 'Notifications'
-        managed = False  # Set to True if Django should manage the table
+        managed = False

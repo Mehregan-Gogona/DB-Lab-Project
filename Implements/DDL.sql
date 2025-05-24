@@ -69,7 +69,6 @@ CREATE TABLE Notifications
     FOREIGN KEY (user_id) REFERENCES Users(user_id)
 );
 
-
 CREATE TABLE Sessions
 (
     session_id INT PRIMARY KEY IDENTITY(1,1),
