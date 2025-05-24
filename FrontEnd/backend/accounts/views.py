@@ -177,7 +177,8 @@ import json
 def get_shared_tasks(request):
     if request.method == 'GET':
         user_id = request.GET.get('user_id')
-        shared = SharedTasks.objects.filter(shared_with_user_id=user_id).select_related('task')
+        # Only fetch accepted shared tasks
+        shared = SharedTasks.objects.filter(shared_with_user_id=user_id, status='Accepted').select_related('task')
         shared_list = [
             {
                 'shared_id': s.shared_id,
@@ -186,7 +187,8 @@ def get_shared_tasks(request):
                 'description': s.task.description,
                 'due_date': s.task.due_date,
                 'priority': s.task.priority,
-                'status': s.task.status  # <-- This is from Tasks table
+                'status': s.task.status,           # Task status (Pending/In Progress/Completed)
+                'shared_status': s.status          # SharedTasks status (Accepted)
             }
             for s in shared
         ]
