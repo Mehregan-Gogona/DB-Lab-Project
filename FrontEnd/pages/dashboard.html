@@ -81,17 +81,16 @@
                     <label>Email: <input type="email" id="edit-profile-email"></label>
                     <label>Phone: <input type="text" id="edit-profile-phone"></label>
                     <label>Room: <input type="text" id="edit-profile-room"></label>
+                    <label>Profile Picture: <input type="file" id="edit-profile-picture" accept="image/*"></label>
                     <button type="submit" class="add-task-btn">Save</button>
                     <button type="button" id="cancel-edit-profile" class="add-task-btn" style="background:#fff;color:#5f6fff;border:2px solid #5f6fff;">Cancel</button>
                 </form>
             </section>
         </main>
     </div>
-
-
 <script>
 
- window.addEventListener('DOMContentLoaded', async () => {
+window.addEventListener('DOMContentLoaded', async () => {
     const user_id = localStorage.getItem('user_id');
     if (!user_id) return;
 
@@ -104,7 +103,7 @@
         document.getElementById('profile-room').textContent = data.user.room_number || '';
         document.getElementById('profile-building').textContent = data.user.building_id || '';
         if (data.user.profile_picture) {
-            document.getElementById('profile-picture').src = data.user.profile_picture;
+            document.getElementById('profile-picture').src = data.user.profile_picture + '?t=' + new Date().getTime();
         }
     }
 });
@@ -128,36 +127,40 @@ cancelBtn.onclick = function() {
     form.style.display = 'none';
 };
 
-// Handle form submit
 form.onsubmit = async function(e) {
     e.preventDefault();
-    
     const user_id = localStorage.getItem('user_id');
+    const formData = new FormData();
+    formData.append('user_id', user_id);
+    formData.append('name', document.getElementById('edit-profile-name').value);
+    formData.append('email', document.getElementById('edit-profile-email').value);
+    formData.append('phone_number', document.getElementById('edit-profile-phone').value);
+    formData.append('room_number', document.getElementById('edit-profile-room').value);
+    const fileInput = document.getElementById('edit-profile-picture');
+    if (fileInput.files.length > 0) {
+        formData.append('profile_picture', fileInput.files[0]);
+    }
 
     const res = await fetch('http://localhost:8000/accounts/update_profile/', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            user_id,
-            name: document.getElementById('edit-profile-name').value,
-            email: document.getElementById('edit-profile-email').value,
-            phone_number: document.getElementById('edit-profile-phone').value,
-            room_number: document.getElementById('edit-profile-room').value
-        })
+        body: formData
     });
     const data = await res.json();
     if (data.success) {
-        // Update profile display
         document.getElementById('profile-name').textContent = data.user.name;
         document.getElementById('profile-email').textContent = data.user.email;
         document.getElementById('profile-phone').textContent = data.user.phone_number;
         document.getElementById('profile-room').textContent = data.user.room_number;
+        if (data.user.profile_picture) {
+            document.getElementById('profile-picture').src = data.user.profile_picture + '?t=' + new Date().getTime();
+        }
         form.style.display = 'none';
         alert('Profile updated!');
     } else {
         alert('Update failed: ' + (data.error || 'Unknown error'));
     }
 };
+
 </script>
 </body>
 </html>

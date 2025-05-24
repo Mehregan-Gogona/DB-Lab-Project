@@ -4,6 +4,9 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 from .models import Users  # Use your custom Users model
 from .models import Tasks  # Use your custom Users model
+import os
+from django.conf import settings
+
 
 @csrf_exempt
 def signup(request):
@@ -90,13 +93,18 @@ def get_tasks(request):
 @csrf_exempt
 def update_profile(request):
     if request.method == 'POST':
-        data = json.loads(request.body)
+        if request.content_type.startswith('multipart/form-data'):
+            data = request.POST
+            files = request.FILES
+        else:
+            data = json.loads(request.body)
+            files = None
+
         user_id = data.get('user_id')
-        print("user_id is ", user_id)  
+        print("user_id is ", user_id)
         print("data is ", data)
         try:
             user = Users.objects.get(user_id=user_id)
-            # Only update fields if they are provided and not empty
             if data.get('name'):
                 user.name = data.get('name')
             if data.get('email'):
@@ -105,12 +113,24 @@ def update_profile(request):
                 user.phone_number = data.get('phone_number')
             if data.get('room_number'):
                 user.room_number = data.get('room_number')
+            # Handle profile picture upload
+            if files and 'profile_picture' in files:
+                pic = files['profile_picture']
+                # Save to media/profile_pics/ (ensure this folder exists and is writable)
+                pic_path = os.path.join('media/profile_pics', f'user_{user_id}_{pic.name}')
+                full_path = os.path.join(settings.BASE_DIR, pic_path)
+                os.makedirs(os.path.dirname(full_path), exist_ok=True)
+                with open(full_path, 'wb+') as destination:
+                    for chunk in pic.chunks():
+                        destination.write(chunk)
+                user.profile_picture = '/' + pic_path  # Save relative path for use in src
             user.save()
             return JsonResponse({'success': True, 'user': {
                 'name': user.name,
                 'email': user.email,
                 'phone_number': user.phone_number,
-                'room_number': user.room_number
+                'room_number': user.room_number,
+                'profile_picture': user.profile_picture
             }})
         except Users.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'User not found'})
