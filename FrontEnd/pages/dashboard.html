@@ -96,6 +96,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     const res = await fetch(`http://localhost:8000/accounts/get_profile/?user_id=${user_id}`);
     const data = await res.json();
+    console.log('Profile data:', data); // <-- Add this line
     if (data.success) {
         document.getElementById('profile-name').textContent = data.user.name || '';
         document.getElementById('profile-email').textContent = data.user.email || '';
@@ -103,11 +104,12 @@ window.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('profile-room').textContent = data.user.room_number || '';
         document.getElementById('profile-building').textContent = data.user.building_id || '';
         if (data.user.profile_picture) {
-            document.getElementById('profile-picture').src = data.user.profile_picture + '?t=' + new Date().getTime();
+        document.getElementById('profile-picture').src = 'http://localhost:8000' + data.user.profile_picture + '?t=' + new Date().getTime();      
+        } else {
+            document.getElementById('profile-picture').src = '../logs_backgrounds/DormDuty_logo1.png'; // Default image
         }
     }
 });
-
 
 const editBtn = document.getElementById('edit-profile-btn');
 const form = document.getElementById('profile-edit-form');
@@ -151,9 +153,8 @@ form.onsubmit = async function(e) {
         document.getElementById('profile-email').textContent = data.user.email;
         document.getElementById('profile-phone').textContent = data.user.phone_number;
         document.getElementById('profile-room').textContent = data.user.room_number;
-        if (data.user.profile_picture) {
-            document.getElementById('profile-picture').src = data.user.profile_picture + '?t=' + new Date().getTime();
-        }
+        if (data.user.profile_picture) {        
+            document.getElementById('profile-picture').src = 'http://localhost:8000' + data.user.profile_picture + '?t=' + new Date().getTime();        }
         form.style.display = 'none';
         alert('Profile updated!');
     } else {
