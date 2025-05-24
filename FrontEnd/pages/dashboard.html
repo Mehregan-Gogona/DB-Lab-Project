@@ -43,17 +43,42 @@
             </section>
             <section id="tasks" class="dashboard-section">
                 <h2>My Tasks</h2>
+                <form id="add-task-form" style="margin-bottom:16px;">
+                    <input type="text" id="task-title" placeholder="Task title" required>
+                    <input type="text" id="task-desc" placeholder="Description">
+                    <input type="date" id="task-due">
+                    <select id="task-priority">
+                        <option value="Low">Low</option>
+                        <option value="Normal" selected>Normal</option>
+                        <option value="High">High</option>
+                    </select>
+                    <button type="submit" class="add-task-btn">Add Task</button>
+                </form>
+                <button id="toggle-completed-btn" class="add-task-btn" style="margin-bottom:12px;">Hide Completed Tasks</button>
                 <div id="tasks-list">
                     <!-- Tasks will be loaded here -->
                 </div>
-                <button class="add-task-btn">+ Add Task</button>
             </section>
+            
             <section id="shared" class="dashboard-section">
                 <h2>Shared Tasks</h2>
+                <form id="share-task-form" style="margin-bottom:16px;">
+                <select id="share-task-id" required>
+                    <option value="">Select Task</option>
+                        <!-- Populated by JS -->
+                    </select>
+                <input type="text" id="share-with-username" placeholder="Username to share with" required>                    <button type="submit" class="add-task-btn">Share Task</button>
+                </form>
                 <div id="shared-tasks-list">
                     <!-- Shared tasks will be loaded here -->
                 </div>
+                <section id="shared-by-me" class="dashboard-section">
+                <h2>Tasks I've Shared</h2>
+                    <div id="shared-by-me-list"></div>
+                </section>  
+              
             </section>
+
             <section id="notifications" class="dashboard-section">
                 <h2>Notifications</h2>
                 <div id="notifications-list">
@@ -89,6 +114,8 @@
         </main>
     </div>
 <script>
+
+let showCompleted = true;
 
 window.addEventListener('DOMContentLoaded', async () => {
     const user_id = localStorage.getItem('user_id');
@@ -161,6 +188,198 @@ form.onsubmit = async function(e) {
         alert('Update failed: ' + (data.error || 'Unknown error'));
     }
 };
+
+// --- Add Task JS ---
+document.getElementById('add-task-form').onsubmit = async function(e) {
+    e.preventDefault();
+    const user_id = localStorage.getItem('user_id');
+    const title = document.getElementById('task-title').value;
+    const description = document.getElementById('task-desc').value;
+    const due_date = document.getElementById('task-due').value;
+    const priority = document.getElementById('task-priority').value;
+
+    const res = await fetch('http://localhost:8000/accounts/add_task/', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({user_id, title, description, due_date, priority})
+    });
+    const data = await res.json();
+    if (data.success) {
+        document.getElementById('add-task-form').reset();
+        loadTasks(); // Reload tasks list (see below)
+    } else {
+        alert('Failed to add task');
+    }
+};
+async function loadTasks() {
+    const user_id = localStorage.getItem('user_id');
+    const res = await fetch(`http://localhost:8000/accounts/dashboard/tasks/?user_id=${user_id}`);
+    const data = await res.json();
+    const list = document.getElementById('tasks-list');
+    list.innerHTML = '';
+    const tasks = Array.isArray(data.tasks) ? data.tasks : Object.values(data.tasks);
+
+    // Filter tasks if needed
+    const visibleTasks = showCompleted ? tasks : tasks.filter(task => task.status !== 'Completed');
+
+    // Update the tasks count here
+    document.querySelector('#tasks-count span').textContent = visibleTasks.length;
+
+    if (data.success && visibleTasks.length > 0) {
+        visibleTasks.forEach(task => {
+            const div = document.createElement('div');
+            div.className = 'task';
+            div.innerHTML = `
+                <strong>${task.title}</strong> - ${task.description || ''}
+                <span style="float:right;">${task.due_date ? task.due_date.split('T')[0] : ''}</span>
+                <br>
+                    <span style="color:#5f6fff;font-weight:500;">Priority: ${task.priority}</span>
+                <br>
+                <label>Status: 
+                    <select class="status-select" data-task-id="${task.task_id}">
+                        <option value="Pending" ${task.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                        <option value="In Progress" ${task.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
+                        <option value="Completed" ${task.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                    </select>
+                </label>
+            `;
+            list.appendChild(div);
+        });
+
+        // Add event listeners for status change
+        document.querySelectorAll('.status-select').forEach(select => {
+            select.addEventListener('change', async function() {
+                const task_id = this.getAttribute('data-task-id');
+                const status = this.value;
+                await fetch('http://localhost:8000/accounts/update_task_status/', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({task_id, status})
+                });
+                loadTasks();
+            });
+        });
+    } else {
+        list.innerHTML = '<p style="color:#888;">No tasks yet.</p>';
+    }
+}
+
+document.getElementById('toggle-completed-btn').onclick = function() {
+    showCompleted = !showCompleted;
+    this.textContent = showCompleted ? 'Hide Completed Tasks' : 'Show Completed Tasks';
+    loadTasks();
+};
+
+async function populateShareTaskDropdown() {
+    const user_id = localStorage.getItem('user_id');
+    const res = await fetch(`http://localhost:8000/accounts/dashboard/tasks/?user_id=${user_id}`);
+    const data = await res.json();
+    const select = document.getElementById('share-task-id');
+    if (!select) return;
+    select.innerHTML = '<option value="">Select Task</option>';
+    (data.tasks || []).forEach(task => {
+        select.innerHTML += `<option value="${task.task_id}">${task.title}</option>`;
+    });
+}
+
+window.addEventListener('DOMContentLoaded', populateShareTaskDropdown);
+
+async function loadSharedTasks() {
+    const user_id = localStorage.getItem('user_id'); // This is the logged-in user
+    const res = await fetch(`http://localhost:8000/accounts/get_shared_tasks/?user_id=${user_id}`);
+    const data = await res.json();
+    document.querySelector('#shared-count span').textContent = data.success ? data.shared_tasks.length : 0;
+    const list = document.getElementById('shared-tasks-list');
+    list.innerHTML = '';
+    if (data.success && data.shared_tasks.length > 0) {
+        data.shared_tasks.forEach(task => {
+            const div = document.createElement('div');
+            div.className = 'shared-task';
+            div.innerHTML = `<strong>${task.title}</strong> - ${task.description || ''} <span style="float:right;">${task.due_date ? task.due_date.split('T')[0] : ''}</span><br>Status: ${task.status}`;
+            list.appendChild(div);
+        });
+    }
+}
+
+const shareForm = document.getElementById('share-task-form');
+if (shareForm) {
+    shareForm.onsubmit = async function(e) {
+        e.preventDefault();
+        const task_id = document.getElementById('share-task-id').value;
+        const shared_with_username = document.getElementById('share-with-username').value;
+        const res = await fetch('http://localhost:8000/accounts/share_task/', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({task_id, shared_with_username})
+        });
+        const data = await res.json();
+        if (data.success) {
+            alert('Task shared!');
+            loadSharedTasks();
+        } else {
+            alert('Failed to share task');
+        }
+    };
+}
+
+async function loadSharedByMe() {
+    const user_id = localStorage.getItem('user_id');
+    const res = await fetch(`http://localhost:8000/accounts/get_tasks_shared_by_me/?user_id=${user_id}`);
+    const data = await res.json();
+    const list = document.getElementById('shared-by-me-list');
+    list.innerHTML = '';
+    if (data.success && data.shared_by_me.length > 0) {
+        data.shared_by_me.forEach(task => {
+            const div = document.createElement('div');
+            div.className = 'shared-task';
+            div.innerHTML = `<strong>${task.title}</strong> shared with <em>${task.shared_with}</em> - ${task.description || ''} <span style="float:right;">${task.due_date ? task.due_date.split('T')[0] : ''}</span><br>Status: ${task.status}`;
+            list.appendChild(div);
+        });
+    } else {
+        list.innerHTML = '<p style="color:#888;">No tasks shared by you yet.</p>';
+    }
+}
+
+window.addEventListener('DOMContentLoaded', loadSharedByMe);
+
+window.addEventListener('DOMContentLoaded', loadSharedTasks);
+window.addEventListener('DOMContentLoaded', loadTasks);
+
+
+async function loadNotifications() {
+    const user_id = localStorage.getItem('user_id');
+    const res = await fetch(`http://localhost:8000/accounts/get_notifications/?user_id=${user_id}`);
+    const data = await res.json();
+    const list = document.getElementById('notifications-list');
+    list.innerHTML = '';
+    if (data.success && data.notifications.length > 0) {
+        data.notifications.forEach(notif => {
+            const div = document.createElement('div');
+            div.className = 'notification' + (notif.read_status ? ' read' : '');
+            div.innerHTML = `
+                <strong>${notif.type}</strong>: ${notif.message}
+                <span style="float:right;font-size:0.9em;color:#888;">${notif.created_at}</span>
+                ${!notif.read_status ? '<button class="mark-read-btn" data-id="'+notif.notification_id+'">Mark as read</button>' : ''}
+            `;
+            list.appendChild(div);
+        });
+        // Add event listeners for mark as read
+        document.querySelectorAll('.mark-read-btn').forEach(btn => {
+            btn.onclick = async function() {
+                const notif_id = this.getAttribute('data-id');
+                await fetch('http://localhost:8000/accounts/mark_notification_read/', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({notification_id: notif_id})
+                });
+                loadNotifications();
+            };
+        });
+    } else {
+        list.innerHTML = '<p style="color:#888;">No notifications.</p>';
+    }
+}
+window.addEventListener('DOMContentLoaded', loadNotifications);
 
 </script>
 </body>

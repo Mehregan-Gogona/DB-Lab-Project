@@ -38,3 +38,33 @@ class Tasks(models.Model):
     class Meta:
         db_table = 'Tasks'
         managed = False  # If table already exists
+
+
+
+# ...existing code...
+
+class SharedTasks(models.Model):
+    shared_id = models.AutoField(primary_key=True)
+    task = models.ForeignKey('Tasks', on_delete=models.CASCADE, db_column='task_id')
+    shared_with_user = models.ForeignKey('Users', on_delete=models.CASCADE, db_column='shared_with_user_id')
+    status = models.CharField(max_length=20, default='Pending')
+
+    class Meta:
+        db_table = 'Shared_Tasks'
+        managed = False  # If the table already exists in your DB
+
+
+
+# ...existing code...
+
+class Notifications(models.Model):
+    notification_id = models.AutoField(primary_key=True)
+    user = models.ForeignKey('Users', on_delete=models.CASCADE, db_column='user_id')
+    message = models.TextField()
+    type = models.CharField(max_length=25)
+    read_status = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'Notifications'
+        managed = False  # Set to True if Django should manage the table

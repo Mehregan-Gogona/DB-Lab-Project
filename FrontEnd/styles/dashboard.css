@@ -6,14 +6,44 @@ body {
     min-height: 100vh;
 }
 
-/* Style for profile edit form */
+
+/* Style the shared task form and its inputs */
+#shared-task-form {
+    background: #f6f8fa;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(72, 177, 243, 0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#shared-task-form input[type="text"],
+#shared-task-form input[type="date"] {
+    padding: 8px 12px;
+    border: 1.5px solid #bfcfff;
+    border-radius: 6px;
+    font-size: 1rem;
+    background: #fff;
+    margin-bottom: 8px;
+}
+
+#shared-task-form button {
+    width: fit-content;
+    align-self: flex-start;
+}
+
+/* editing profile ..  */
 #profile-edit-form {
     background: #f6f8fa;
     border-radius: 12px;
     padding: 24px 20px;
     box-shadow: 0 2px 8px rgba(72, 177, 243, 0.06);
     margin-top: 12px;
-    max-width: 400px;
+    width: 100%;         /* Make it take full width */
+    max-width: none;     /* Remove max-width restriction */
+    box-sizing: border-box; /* Ensure padding doesn't overflow */
 }
 
 #profile-edit-form label {
@@ -23,6 +53,7 @@ body {
     display: flex;
     flex-direction: column;
 }
+
 
 #profile-edit-form input[type="text"],
 #profile-edit-form input[type="email"] {
@@ -47,6 +78,126 @@ body {
     margin-right: 8px;
     width: fit-content;
     display: inline-block;
+}
+
+
+.task {
+    background: #fff;
+    border: 1px solid #bfcfff;
+    border-radius: 6px;
+    padding: 12px;
+    margin-bottom: 10px;
+    color: #22223b;
+    display: block;
+}
+
+/* Style the add task form and its inputs */
+#add-task-form {
+    background: #f6f8fa;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px rgba(72, 177, 243, 0.06);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: flex-end;
+}
+
+#add-task-form input[type="text"],
+#add-task-form input[type="date"],
+#add-task-form select {
+    padding: 8px 12px;
+    border: 1.5px solid #bfcfff;
+    border-radius: 6px;
+    font-size: 1rem;
+    background: #fff;
+    margin-bottom: 0;
+    flex: 1 1 180px;
+    min-width: 120px;
+}
+
+#add-task-form button {
+    width: fit-content;
+    align-self: flex-start;
+    margin-top: 0;
+    margin-left: 8px;
+}
+
+/* Shared Tasks Section */
+#shared-tasks-list {
+    margin-top: 12px;
+}
+
+.shared-task {
+    background: #f6f8fa;
+    border: 1.5px solid #bfcfff;
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    color: #22223b;
+    box-shadow: 0 2px 8px rgba(72, 177, 243, 0.06);
+    font-size: 1rem;
+}
+/* Style for the share form inputs */
+#share-task-form input[type="text"],
+#share-task-form select {
+    padding: 8px 12px;
+    border: 1.5px solid #bfcfff;
+    border-radius: 6px;
+    font-size: 1rem;
+    background: #fff;
+    min-width: 120px;
+    margin-right: 8px;
+}
+
+#share-task-form button {
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: none;
+    background: #5f6fff;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+#share-task-form button:hover {
+    background: #3a47d5;
+}
+
+.notification {
+    background: #f6f8fa;
+    border: 1.5px solid #bfcfff;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 10px;
+    color: #22223b;
+    font-size: 1rem;
+    position: relative;
+}
+.notification.read {
+    opacity: 0.6;
+}
+.mark-read-btn {
+    background: #5f6fff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 10px;
+    margin-left: 10px;
+    cursor: pointer;
+    font-size: 0.95em;
+}
+.mark-read-btn:hover {
+    background: #3a47d5;
+}
+
+.status-select {
+    margin-left: 8px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    border: 1px solid #bfcfff;
 }
 
 .dashboard-container {

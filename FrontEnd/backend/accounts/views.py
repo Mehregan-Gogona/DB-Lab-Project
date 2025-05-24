@@ -2,8 +2,7 @@ from django.db import connection
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
-from .models import Users  # Use your custom Users model
-from .models import Tasks  # Use your custom Users model
+from .models import Users , Tasks , Categories , Notifications
 import os
 from django.conf import settings
 
@@ -88,8 +87,8 @@ def get_tasks(request):
     if request.method == 'GET':
         user_id = request.GET.get('user_id')
         tasks = list(Tasks.objects.filter(user_id=user_id).values())
-        return JsonResponse({'tasks': tasks})
-    
+    return JsonResponse({'success': True, 'tasks': tasks})    
+
 @csrf_exempt
 def update_profile(request):
     if request.method == 'POST':
@@ -132,6 +131,220 @@ def update_profile(request):
                 'room_number': user.room_number,
                 'profile_picture': user.profile_picture
             }})
+        except Users.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'User not found'})
+    return JsonResponse({'success': False, 'error': 'Invalid request'})
+
+
+
+@csrf_exempt
+def add_task(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        user_id = data.get('user_id')
+        title = data.get('title')
+        description = data.get('description', '')
+        due_date = data.get('due_date')
+        priority = data.get('priority', 'Normal')
+        status = data.get('status', 'Pending')
+        category_id = data.get('category_id')
+
+        try:
+            user = Users.objects.get(user_id=user_id)
+            category = Categories.objects.get(id=category_id) if category_id else None
+            task = Tasks.objects.create(
+                user=user,
+                title=title,
+                description=description,
+                due_date=due_date,
+                priority=priority,
+                status=status,
+                category=category
+            )
+            return JsonResponse({'success': True, 'task_id': task.task_id})
+        except Users.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'User not found'})
+    return JsonResponse({'success': False, 'error': 'Invalid request'})
+
+
+
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+import json
+
+
+@csrf_exempt
+def get_shared_tasks(request):
+    if request.method == 'GET':
+        user_id = request.GET.get('user_id')
+        shared = SharedTasks.objects.filter(shared_with_user__user_id=user_id).select_related('task')
+        shared_list = [
+            {
+                'shared_id': s.shared_id,
+                'task_id': s.task.task_id,
+                'title': s.task.title,
+                'description': s.task.description,
+                'due_date': s.task.due_date,
+                'priority': s.task.priority,
+                'status': s.status
+            }
+            for s in shared
+        ]
+        return JsonResponse({'success': True, 'shared_tasks': shared_list})
+    return JsonResponse({'success': False, 'error': 'Invalid request'})
+
+
+@csrf_exempt
+def update_task_status(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        task_id = data.get('task_id')
+        new_status = data.get('status')
+        if new_status not in ['Pending', 'In Progress', 'Completed']:
+            return JsonResponse({'success': False, 'error': 'Invalid status'})
+        try:
+            task = Tasks.objects.get(task_id=task_id)
+            task.status = new_status
+            task.save()
+            return JsonResponse({'success': True})
+        except Tasks.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Task not found'})
+    return JsonResponse({'success': False, 'error': 'Invalid request'})
+
+
+from .models import SharedTasks, Tasks, Users
+
+@csrf_exempt
+def share_task(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        task_id = data.get('task_id')
+        shared_with_user_id = data.get('shared_with_user_id')
+        try:
+            task = Tasks.objects.get(task_id=task_id)
+            user = Users.objects.get(user_id=shared_with_user_id)
+            shared_task = SharedTasks.objects.create(task=task, shared_with_user=user)
+            return JsonResponse({'success': True, 'shared_id': shared_task.shared_id})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    return JsonResponse({'success': False, 'error': 'Invalid request'})
+
+from .models import SharedTasks, Tasks, Users
+
+@csrf_exempt
+def share_task(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        task_id = data.get('task_id')
+        shared_with_user_id = data.get('shared_with_user_id')
+        try:
+            task = Tasks.objects.get(task_id=task_id)
+            user = Users.objects.get(user_id=shared_with_user_id)
+            shared_task = SharedTasks.objects.create(task=task, shared_with_user=user)
+            return JsonResponse({'success': True, 'shared_id': shared_task.shared_id})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    return JsonResponse({'success': False, 'error': 'Invalid request'})
+
+@csrf_exempt
+def share_task(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        task_id = data.get('task_id')
+        shared_with_username = data.get('shared_with_username')  # or shared_with_email
+        try:
+            task = Tasks.objects.get(task_id=task_id)
+            user = Users.objects.get(name=shared_with_username)  # or email=shared_with_email
+            shared_task = SharedTasks.objects.create(task=task, shared_with_user=user)
+            return JsonResponse({'success': True, 'shared_id': shared_task.shared_id})
+        except Users.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'User not found'})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    return JsonResponse({'success': False, 'error': 'Invalid request'})
+
+
+@csrf_exempt
+def update_shared_task_status(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        shared_id = data.get('shared_id')
+        status = data.get('status')
+        try:
+            shared_task = SharedTasks.objects.get(shared_id=shared_id)
+            shared_task.status = status
+            shared_task.save()
+            return JsonResponse({'success': True})
+        except SharedTasks.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Shared task not found'})
+    return JsonResponse({'success': False, 'error': 'Invalid request'})
+
+
+@csrf_exempt
+def get_tasks_shared_by_me(request):
+    if request.method == 'GET':
+        user_id = request.GET.get('user_id')
+        shared = SharedTasks.objects.filter(task__user_id=user_id).select_related('task', 'shared_with_user')
+        shared_list = [
+            {
+                'shared_id': s.shared_id,
+                'task_id': s.task.task_id,
+                'title': s.task.title,
+                'description': s.task.description,
+                'due_date': s.task.due_date,
+                'priority': s.task.priority,
+                'status': s.status,
+                'shared_with': s.shared_with_user.name  # or .email
+            }
+            for s in shared
+        ]
+        return JsonResponse({'success': True, 'shared_by_me': shared_list})
+    return JsonResponse({'success': False, 'error': 'Invalid request'})
+
+
+@csrf_exempt
+def get_notifications(request):
+    if request.method == 'GET':
+        user_id = request.GET.get('user_id')
+        notifications = Notifications.objects.filter(user_id=user_id).order_by('-created_at')
+        notif_list = [
+            {
+                'notification_id': n.notification_id,
+                'message': n.message,
+                'type': n.type,
+                'read_status': n.read_status,
+                'created_at': n.created_at.strftime('%Y-%m-%d %H:%M')
+            }
+            for n in notifications
+        ]
+        return JsonResponse({'success': True, 'notifications': notif_list})
+    return JsonResponse({'success': False, 'error': 'Invalid request'})
+
+@csrf_exempt
+def mark_notification_read(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        notif_id = data.get('notification_id')
+        try:
+            notif = Notifications.objects.get(notification_id=notif_id)
+            notif.read_status = True
+            notif.save()
+            return JsonResponse({'success': True})
+        except Notifications.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Notification not found'})
+    return JsonResponse({'success': False, 'error': 'Invalid request'})
+
+@csrf_exempt
+def create_notification(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        user_id = data.get('user_id')
+        message = data.get('message')
+        notif_type = data.get('type')
+        try:
+            user = Users.objects.get(user_id=user_id)
+            notif = Notifications.objects.create(user=user, message=message, type=notif_type)
+            return JsonResponse({'success': True, 'notification_id': notif.notification_id})
         except Users.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'User not found'})
     return JsonResponse({'success': False, 'error': 'Invalid request'})
