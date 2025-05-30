@@ -15,6 +15,7 @@ class Users(models.Model):
         db_table = 'Users'
         managed = False  # Because the table already exists
 
+
 class Categories(models.Model):
     category_id = models.AutoField(primary_key=True)
     user = models.ForeignKey(Users, on_delete=models.CASCADE)
@@ -30,6 +31,11 @@ class Tasks(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField(null=True, blank=True)
     due_date = models.DateTimeField(null=True, blank=True)
+    priority = models.Ck_id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(Users, on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    description = models.TextField(null=True, blank=True)
+    due_date = models.DateTimeField(null=True, blank=True)
     priority = models.CharField(max_length=20)
     status = models.CharField(max_length=20, default='Pending')
     category = models.ForeignKey(Categories, null=True, blank=True, on_delete=models.SET_NULL)
@@ -39,9 +45,6 @@ class Tasks(models.Model):
         db_table = 'Tasks'
         managed = False  # If table already exists
 
-
-
-# ...existing code...
 
 class SharedTasks(models.Model):
     shared_id = models.AutoField(primary_key=True)

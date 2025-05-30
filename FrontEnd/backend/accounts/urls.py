@@ -3,6 +3,7 @@ from . import views
 from django.conf.urls.static import static
 
 urlpatterns = [
+
     path('signup/', views.signup, name='signup'),
     path('login/', views.login_view, name='login'),
     path('dashboard/tasks/', views.get_tasks, name='get_tasks'),   
@@ -19,5 +20,6 @@ urlpatterns = [
     path('create_notification/', views.create_notification, name='create_notification'),
     path('update_shared_task_status/', views.update_shared_task_status, name='update_shared_task_status'),
     path('respond_shared_task/', views.respond_shared_task, name='respond_shared_task'),
+    
 ]
 

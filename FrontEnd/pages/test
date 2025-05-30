@@ -1,0 +1,36 @@
+notification_id,user_id,message,type,read_status,created_at,shared_id
+1,7,"Task ""Call Parents"" is due soon (2025-05-02 17:09:05)",Task Reminder,0,2025-05-01 20:43:21.960,NULL
+2,2,"Task ""Buy Groceries"" is due soon (2025-05-02 17:09:05)",Task Reminder,0,2025-05-01 20:43:21.960,NULL
+3,8,"Task ""Physics Assignment"" has been shared with you by Ali Ahmadi",Shared Task Request,0,2025-05-01 20:43:21.983,NULL
+4,10,"Task ""Physics Assignment"" has been shared with you by Ali Ahmadi",Shared Task Request,0,2025-05-01 20:43:21.983,NULL
+5,9,"Task ""Physics Assignment"" has been shared with you by Ali Ahmadi",Shared Task Request,0,2025-05-01 20:43:21.983,NULL
+6,7,"Task ""Physics Assignment"" has been shared with you by Ali Ahmadi",Shared Task Request,0,2025-05-01 20:43:21.983,NULL
+7,6,"Task ""Physics Assignment"" has been shared with you by Ali Ahmadi",Shared Task Request,0,2025-05-01 20:43:21.983,NULL
+8,4,"Task ""Physics Assignment"" has been shared with you by Ali Ahmadi",Shared Task Request,0,2025-05-01 20:43:21.983,NULL
+9,1,"Task ""Physics Assignment"" has been shared with you by Ali Ahmadi",Shared Task Request,0,2025-05-01 20:43:21.983,NULL
+10,2,"Task ""Physics Assignment"" has been shared with you by Ali Ahmadi",Shared Task Request,0,2025-05-01 20:43:21.983,NULL
+14,1,"Task ""Clean Room"" is due soon (2025-05-03 17:09:05)",Task Reminder,0,2025-04-30 17:09:05.000,NULL
+15,7,"Task ""Call Parents"" is due soon (2025-05-02 17:09:05)",Task Reminder,0,2025-04-30 17:09:05.000,NULL
+17,8,"Task ""History Essay"" is due soon (2025-05-13 17:09:05)",Task Reminder,0,2025-04-30 17:09:05.000,NULL
+19,13,"Task ""test"" has been shared with you by amir2",Shared Task Request,1,2025-05-24 18:54:04.630,NULL
+22,12,"Task ""mohhmads_task"" has been shared with you by mohammad",Shared Task Request,1,2025-05-24 19:07:01.690,NULL
+23,11,"Task ""mohhmads_task"" has been shared with you by mohammad",Shared Task Request,1,2025-05-24 19:22:32.083,NULL
+24,11,"Task ""amir's_task"" is due soon (2025-05-25 00:00:00)",Task Reminder,1,2025-05-24 19:26:28.990,NULL
+33,13,amir2 shared a task with you: amir_new_test_to_share,Shared Task Request,1,2025-05-24 20:33:14.470,21
+35,13,amir2 shared a task with you: sad,Shared Task Request,1,2025-05-24 20:34:55.553,22
+37,12,mohammad shared a task with you: mohhmads_task,Shared Task Request,1,2025-05-24 20:44:53.327,23
+39,12,mohammad shared a task with you: mohhmads_task,Shared Task Request,1,2025-05-24 20:50:52.950,24
+41,12,mohammad shared a task with you: mohhmads_task,Shared Task Request,1,2025-05-24 20:55:11.867,25
+43,13,amir2 shared a task with you: amir_new_test_to_share,Shared Task Request,1,2025-05-24 20:56:35.910,26
+44,12,mohammad shared a task with you: new_mohammad_task,Shared Task Request,1,2025-05-24 21:03:13.553,19
+46,13,amir2 shared a task with you: n_to_share,Shared Task Request,1,2025-05-24 21:04:37.470,27
+47,15,"Task ""test1_task_tet"" has been shared with you by test1",Shared Task Request,1,2025-05-24 21:06:45.737,NULL
+48,15,test1 shared a task with you: test1_task_tet,Shared Task Request,1,2025-05-24 21:06:45.757,28
+49,14,"Task ""test_2_new_test"" has been shared with you by test2",Shared Task Request,1,2025-05-24 21:15:05.723,NULL
+50,14,test2 shared a task with you: test_2_new_test,Shared Task Request,1,2025-05-24 21:15:05.743,29
+51,15,"Task ""test1_task_test2"" has been shared with you by test1",Shared Task Request,1,2025-05-24 21:24:59.820,NULL
+52,15,test1 shared a task with you: test1_task_test2,Shared Task Request,1,2025-05-24 21:24:59.833,30
+53,14,"Task ""rr"" has been shared with you by test2",Shared Task Request,1,2025-05-24 21:27:31.060,NULL
+54,14,test2 shared a task with you: rr,Shared Task Request,1,2025-05-24 21:27:31.070,31
+55,14,"Task ""test1_task_tet"" has been shared with you by test1",Shared Task Request,1,2025-05-24 21:28:18.943,NULL
+56,14,test1 shared a task with you: test1_task_tet,Shared Task Request,1,2025-05-24 21:28:18.963,32

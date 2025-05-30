@@ -7,6 +7,7 @@ import os
 from django.conf import settings
 
 
+
 @csrf_exempt
 def signup(request):
     print("DB Connection:", connection.settings_dict)
@@ -220,7 +221,6 @@ def share_task(request):
         data = json.loads(request.body)
         task_id = data.get('task_id')
         shared_with_username = data.get('shared_with_username')
-        print("Creating notification for shared task:", task_id, "to", shared_with_username)
         try:
             task = Tasks.objects.get(task_id=task_id)
             user = Users.objects.get(name=shared_with_username)
@@ -229,7 +229,6 @@ def share_task(request):
                 shared_with_user=user,
                 defaults={'status': 'Pending'}
             )
-            # Only create notification if it doesn't already exist for this shared_task
             notif_exists = Notifications.objects.filter(
                 user=user,
                 type='Shared Task Request',
@@ -240,7 +239,7 @@ def share_task(request):
                     user=user,
                     message=f"{task.user.name} shared a task with you: {task.title}",
                     type='Shared Task Request',
-                    shared=shared_task
+                    shared=shared_task  # <-- This is required!
                 )
             return JsonResponse({'success': True, 'shared_id': shared_task.shared_id})
         except Users.DoesNotExist:
@@ -324,17 +323,19 @@ def mark_notification_read(request):
             return JsonResponse({'success': False, 'error': 'Notification not found'})
     return JsonResponse({'success': False, 'error': 'Invalid request'})
 
+
 @csrf_exempt
 def create_notification(request):
     if request.method == 'POST':
         data = json.loads(request.body)
-        user_id = data.get('user_id')
-        message = data.get('message')
         notif_type = data.get('type')
-        print("Generic notification created:", message)
-        # Prevent duplicate shared task notifications
         if notif_type == 'Shared Task Request':
             return JsonResponse({'success': False, 'error': 'Use share_task endpoint for shared task notifications'})
+        
+        print("this is now a generic notification")
+        user_id = data.get('user_id')
+        message = data.get('message')
+        print("Generic notification created:", message)
         try:
             user = Users.objects.get(user_id=user_id)
             notif = Notifications.objects.create(user=user, message=message, type=notif_type)
@@ -368,7 +369,7 @@ def respond_shared_task(request):
     if request.method == 'POST':
         data = json.loads(request.body)
         shared_id = data.get('shared_id')
-        action = data.get('action')  # 'Accepted' or 'Declined'
+        action = data.get('action')     
         if action not in ['Accepted', 'Declined']:
             return JsonResponse({'success': False, 'error': 'Invalid action'})
         try:
